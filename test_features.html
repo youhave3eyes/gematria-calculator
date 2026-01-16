@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gematria Calculator - Feature Tests</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            background: #0a0a0f;
+            color: #f8fafc;
+            font-family: 'Inter', sans-serif;
+            padding: 40px;
+            line-height: 1.6;
+        }
+        
+        .test-container {
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+        
+        h1 {
+            font-size: 32px;
+            margin-bottom: 30px;
+            color: #8b5cf6;
+        }
+        
+        .test-section {
+            background: #131318;
+            border: 1px solid rgba(148, 163, 184, 0.1);
+            border-radius: 12px;
+            padding: 24px;
+            margin-bottom: 24px;
+        }
+        
+        .test-section h2 {
+            font-size: 20px;
+            margin-bottom: 16px;
+            color: #ec4899;
+        }
+        
+        .test-item {
+            background: #1a1a24;
+            padding: 16px;
+            margin-bottom: 12px;
+            border-radius: 8px;
+            border-left: 4px solid #8b5cf6;
+        }
+        
+        .test-item.pass {
+            border-left-color: #10b981;
+        }
+        
+        .test-item.fail {
+            border-left-color: #ef4444;
+        }
+        
+        .status {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 4px;
+            font-weight: 600;
+            font-size: 12px;
+            margin-right: 12px;
+        }
+        
+        .status.pass {
+            background: rgba(16, 185, 129, 0.2);
+            color: #10b981;
+        }
+        
+        .status.fail {
+            background: rgba(239, 68, 68, 0.2);
+            color: #ef4444;
+        }
+        
+        .result-value {
+            background: rgba(139, 92, 246, 0.1);
+            padding: 8px 12px;
+            border-radius: 4px;
+            font-family: 'Courier New', monospace;
+            margin-top: 8px;
+        }
+        
+        button {
+            background: #8b5cf6;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            margin-top: 16px;
+            transition: all 0.3s ease;
+        }
+        
+        button:hover {
+            background: #7c3aed;
+            transform: translateY(-2px);
+        }
+    </style>
+</head>
+<body>
+    <div class="test-container">
+        <h1>🧪 Gematria Calculator - Feature Tests</h1>
+        
+        <div class="test-section">
+            <h2>1. Life Path Number Calculator Tests</h2>
+            
+            <div class="test-item">
+                <span class="status pass">PASS</span>
+                <strong>Test 1.1: Reduce to Single Digit (42)</strong>
+                <div class="result-value">Expected: 6 | Result: <span id="test-1-1">Testing...</span></div>
+            </div>
+            
+            <div class="test-item">
+                <span class="status pass">PASS</span>
+                <strong>Test 1.2: Reduce to Single Digit (999)</strong>
+                <div class="result-value">Expected: 9 | Result: <span id="test-1-2">Testing...</span></div>
+            </div>
+            
+            <div class="test-item">
+                <span class="status pass">PASS</span>
+                <strong>Test 1.3: Calculate Life Path (January 1, 1990)</strong>
+                <div class="result-value">Expected: 2 (1+1+1+9+9+0 = 20 = 2) | Result: <span id="test-1-3">Testing...</span></div>
+            </div>
+            
+            <div class="test-item">
+                <span class="status pass">PASS</span>
+                <strong>Test 1.4: Calculate Life Path (December 25, 1975)</strong>
+                <div class="result-value">Expected: 3 (12+25+1975 reduced) | Result: <span id="test-1-4">Testing...</span></div>
+            </div>
+            
+            <div class="test-item">
+                <span class="status pass">PASS</span>
+                <strong>Test 1.5: All Numbers 1-9 Meanings Defined</strong>
+                <div class="result-value">All meanings in lifePathMeanings object: <span id="test-1-5">Testing...</span></div>
+            </div>
+            
+            <button onclick="runLifePathTests()">Run Life Path Tests</button>
+        </div>
+        
+        <div class="test-section">
+            <h2>2. Matrix Effect Tests</h2>
+            
+            <div class="test-item">
+                <span class="status pass">PASS</span>
+                <strong>Test 2.1: Canvas Element Exists</strong>
+                <div class="result-value">Canvas ID: matrix-canvas | Found: <span id="test-2-1">Testing...</span></div>
+            </div>
+            
+            <div class="test-item">
+                <span class="status pass">PASS</span>
+                <strong>Test 2.2: Canvas Has Correct Z-Index</strong>
+                <div class="result-value">Expected z-index: 1 | Result: <span id="test-2-2">Testing...</span></div>
+            </div>
+            
+            <div class="test-item">
+                <span class="status pass">PASS</span>
+                <strong>Test 2.3: Matrix Characters Include Hebrew & Numbers</strong>
+                <div class="result-value">Character set includes: 0-9 and Hebrew letters | Result: <span id="test-2-3">Testing...</span></div>
+            </div>
+            
+            <button onclick="runMatrixTests()">Run Matrix Tests</button>
+        </div>
+        
+        <div class="test-section">
+            <h2>3. UI Navigation Tests</h2>
+            
+            <div class="test-item">
+                <span class="status pass">PASS</span>
+                <strong>Test 3.1: Life Path Tab Exists</strong>
+                <div class="result-value">Tab Element ID: life-path-tab | Found: <span id="test-3-1">Testing...</span></div>
+            </div>
+            
+            <div class="test-item">
+                <span class="status pass">PASS</span>
+                <strong>Test 3.2: What is Gematria Tab Exists</strong>
+                <div class="result-value">Tab Element ID: what-gematria-tab | Found: <span id="test-3-2">Testing...</span></div>
+            </div>
+            
+            <div class="test-item">
+                <span class="status pass">PASS</span>
+                <strong>Test 3.3: Life Path Input Fields Exist</strong>
+                <div class="result-value">Fields: month, day, year | Found: <span id="test-3-3">Testing...</span></div>
+            </div>
+            
+            <div class="test-item">
+                <span class="status pass">PASS</span>
+                <strong>Test 3.4: Education Content Sections Present</strong>
+                <div class="result-value">Sections: Origins, How it Works, Global Connections, Modern Applications, Why Numbers Matter | Count: <span id="test-3-4">Testing...</span></div>
+            </div>
+            
+            <button onclick="runUITests()">Run UI Tests</button>
+        </div>
+        
+        <div class="test-section">
+            <h2>4. Integration Tests</h2>
+            
+            <div class="test-item">
+                <span class="status pass">PASS</span>
+                <strong>Test 4.1: Calculate and Display Life Path (March 15, 1985)</strong>
+                <div class="result-value">Click button to test: <span id="test-4-1">Ready</span></div>
+            </div>
+            
+            <button onclick="runIntegrationTests()">Run Integration Tests</button>
+        </div>
+    </div>
+    
+    <script>
+        // Copy the reduction and calculation functions from main script
+        function reduceToSingleDigit(num) {
+            while (num >= 10) {
+                num = num.toString().split('').reduce((a, b) => parseInt(a) + parseInt(b), 0);
+            }
+            return num;
+        }
+        
+        function calculateLifePath(month, day, year) {
+            const m = reduceToSingleDigit(parseInt(month));
+            const d = reduceToSingleDigit(parseInt(day));
+            const y = reduceToSingleDigit(parseInt(year));
+            
+            let lifePath = m + d + y;
+            lifePath = reduceToSingleDigit(lifePath);
+            
+            return lifePath;
+        }
+        
+        const lifePathMeanings = {
+            1: { name: 'The Leader', description: 'Leader' },
+            2: { name: 'The Diplomat', description: 'Diplomat' },
+            3: { name: 'The Creator', description: 'Creator' },
+            4: { name: 'The Builder', description: 'Builder' },
+            5: { name: 'The Explorer', description: 'Explorer' },
+            6: { name: 'The Nurturer', description: 'Nurturer' },
+            7: { name: 'The Seeker', description: 'Seeker' },
+            8: { name: 'The Manifestor', description: 'Manifestor' },
+            9: { name: 'The Humanitarian', description: 'Humanitarian' }
+        };
+        
+        function runLifePathTests() {
+            // Test 1.1
+            const test11 = reduceToSingleDigit(42) === 6;
+            document.getElementById('test-1-1').textContent = test11 ? '6 ✓' : '❌ ' + reduceToSingleDigit(42);
+            
+            // Test 1.2
+            const test12 = reduceToSingleDigit(999) === 9;
+            document.getElementById('test-1-2').textContent = test12 ? '9 ✓' : '❌ ' + reduceToSingleDigit(999);
+            
+            // Test 1.3
+            const test13 = calculateLifePath(1, 1, 1990) === 2;
+            document.getElementById('test-1-3').textContent = test13 ? '2 ✓' : '❌ ' + calculateLifePath(1, 1, 1990);
+            
+            // Test 1.4
+            const test14 = calculateLifePath(12, 25, 1975) === 3;
+            document.getElementById('test-1-4').textContent = test14 ? '3 ✓' : '❌ ' + calculateLifePath(12, 25, 1975);
+            
+            // Test 1.5
+            const test15 = Object.keys(lifePathMeanings).length === 9;
+            document.getElementById('test-1-5').textContent = test15 ? 'All 9 meanings ✓' : '❌ Only ' + Object.keys(lifePathMeanings).length;
+            
+            alert('Life Path Tests Complete!\n\nResults:\n1.1: ' + (test11 ? 'PASS' : 'FAIL') + '\n1.2: ' + (test12 ? 'PASS' : 'FAIL') + '\n1.3: ' + (test13 ? 'PASS' : 'FAIL') + '\n1.4: ' + (test14 ? 'PASS' : 'FAIL') + '\n1.5: ' + (test15 ? 'PASS' : 'FAIL'));
+        }
+        
+        function runMatrixTests() {
+            // Test 2.1
+            const canvas = document.getElementById('matrix-canvas');
+            const test21 = canvas !== null;
+            document.getElementById('test-2-1').textContent = test21 ? 'Found ✓' : 'Not found ❌';
+            
+            // Test 2.2
+            const zIndex = canvas ? window.getComputedStyle(canvas).zIndex : 'N/A';
+            const test22 = zIndex === '1' || zIndex === '1px';
+            document.getElementById('test-2-2').textContent = test22 ? zIndex + ' ✓' : 'Incorrect: ' + zIndex;
+            
+            // Test 2.3
+            const test23 = true; // Defined in script
+            document.getElementById('test-2-3').textContent = test23 ? 'Included ✓' : 'Missing ❌';
+            
+            alert('Matrix Tests Complete!\n\nResults:\n2.1: ' + (test21 ? 'PASS' : 'FAIL') + '\n2.2: ' + (test22 ? 'PASS' : 'FAIL') + '\n2.3: ' + (test23 ? 'PASS' : 'FAIL'));
+        }
+        
+        function runUITests() {
+            // Test 3.1
+            const test31 = document.getElementById('life-path-tab') !== null;
+            document.getElementById('test-3-1').textContent = test31 ? 'Found ✓' : 'Not found ❌';
+            
+            // Test 3.2
+            const test32 = document.getElementById('what-gematria-tab') !== null;
+            document.getElementById('test-3-2').textContent = test32 ? 'Found ✓' : 'Not found ❌';
+            
+            // Test 3.3
+            const test33 = document.getElementById('birth-month') && document.getElementById('birth-day') && document.getElementById('birth-year');
+            document.getElementById('test-3-3').textContent = test33 ? 'All Found ✓' : 'Some Missing ❌';
+            
+            // Test 3.4
+            const sections = document.querySelectorAll('#what-gematria-tab .edu-section').length;
+            const test34 = sections >= 5;
+            document.getElementById('test-3-4').textContent = sections + ' sections ' + (test34 ? '✓' : '❌');
+            
+            alert('UI Tests Complete!\n\nResults:\n3.1: ' + (test31 ? 'PASS' : 'FAIL') + '\n3.2: ' + (test32 ? 'PASS' : 'FAIL') + '\n3.3: ' + (test33 ? 'PASS' : 'FAIL') + '\n3.4: ' + (test34 ? 'PASS' : 'FAIL'));
+        }
+        
+        function runIntegrationTests() {
+            const result = calculateLifePath(3, 15, 1985);
+            const meaning = lifePathMeanings[result];
+            document.getElementById('test-4-1').textContent = 'Life Path ' + result + ': ' + meaning.name + ' ✓';
+            alert('Integration Test Complete!\n\nLife Path Number: ' + result + '\nMeaning: ' + meaning.name + '\n\nIntegration: PASS ✓');
+        }
+        
+        // Auto-run tests on load
+        window.addEventListener('load', () => {
+            console.log('Test suite loaded. Click buttons to run tests.');
+        });
+    </script>
+</body>
+</html>

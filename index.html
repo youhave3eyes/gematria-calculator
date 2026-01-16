@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gematria Calculator - Decode Hidden Meanings</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <canvas id="matrix-canvas" class="matrix-canvas"></canvas>
+    <div class="background-grid"></div>
+    
+    <!-- Header -->
+    <header class="header">
+        <div class="container">
+            <div class="header-content">
+                <div class="logo">
+                    <svg class="logo-icon" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M20 4L4 12V28L20 36L36 28V12L20 4Z" stroke="currentColor" stroke-width="2" fill="none"/>
+                        <circle cx="20" cy="20" r="6" fill="currentColor"/>
+                    </svg>
+                    <span class="logo-text">GematriaCalc</span>
+                </div>
+                <nav class="nav">
+                    <button class="nav-btn active" data-tab="calculator">Calculator</button>
+                    <button class="nav-btn" data-tab="life-path">Life Path</button>
+                    <button class="nav-btn" data-tab="what-gematria">What is Gematria?</button>
+                    <button class="nav-btn" data-tab="database">Database</button>
+                    <button class="nav-btn" data-tab="history">History</button>
+                    <button class="nav-btn" data-tab="saved">Saved</button>
+                </nav>
+                <div class="user-section">
+                    <button class="user-btn" id="auth-btn">
+                        <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                            <circle cx="10" cy="7" r="3" stroke="currentColor" stroke-width="2"/>
+                            <path d="M4 17C4 13.6863 6.68629 11 10 11C13.3137 11 16 13.6863 16 17" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                        </svg>
+                        <span id="auth-text">Login</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="main">
+        <div class="container">
+            <!-- Calculator Tab -->
+            <div class="tab-content active" id="calculator-tab">
+                <div class="hero-section">
+                    <h1 class="hero-title">Discover Hidden Numerical Patterns</h1>
+                    <p class="hero-subtitle">Enter any word or phrase to calculate its gematria value across multiple cipher systems</p>
+                </div>
+
+                <!-- Multi-Search Section -->
+                <div class="multi-search-section">
+                    <div class="search-items" id="search-items">
+                        <!-- Search item 1 -->
+                        <div class="search-item active" data-search-id="1">
+                            <div class="search-header">
+                                <span class="search-label">Search 1</span>
+                                <button class="remove-search-btn" data-search-id="1" style="display: none;">
+                                    <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                                        <path d="M12 4L4 12M4 4L12 12" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                                    </svg>
+                                </button>
+                            </div>
+                            <div class="input-wrapper">
+                                <input type="text" class="gematria-input" data-search-id="1" placeholder="Enter a word or phrase..." autocomplete="off">
+                                <button class="clear-btn" data-search-id="1" aria-label="Clear input">
+                                    <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                                        <path d="M15 5L5 15M5 5L15 15" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                                    </svg>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <button class="add-search-btn" id="add-search-btn">
+                        <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                            <path d="M10 4V16M4 10H16" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                        </svg>
+                        Add Another Search
+                    </button>
+                </div>
+
+                <!-- Cipher Filter Section -->
+                <div class="cipher-filter-section" id="cipher-filter-section" style="display: none;">
+                    <div class="filter-header">
+                        <h3 class="filter-title">
+                            <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                                <path d="M2 4H18M4 8H16M6 12H14M8 16H12" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                            </svg>
+                            Display Ciphers
+                        </h3>
+                        <div class="filter-actions">
+                            <button class="filter-action-btn" id="select-all-ciphers">Select All</button>
+                            <button class="filter-action-btn" id="deselect-all-ciphers">Deselect All</button>
+                        </div>
+                    </div>
+                    <div class="cipher-checkboxes" id="cipher-checkboxes">
+                        <!-- Checkboxes will be inserted here -->
+                    </div>
+                </div>
+
+                <!-- Results Section -->
+                <div class="results-section" id="results-section" style="display: none;">
+                    <div class="comparison-grid" id="comparison-grid">
+                        <!-- Comparison columns will be inserted here -->
+                    </div>
+                </div>
+
+                <!-- Matches Section -->
+                <div class="matches-section" id="matches-section" style="display: none;">
+                    <div class="section-header">
+                        <h2 class="section-title">
+                            <svg class="section-icon" width="24" height="24" viewBox="0 0 24 24" fill="none">
+                                <path d="M21 21L16.5 16.5M19 11C19 15.4183 15.4183 19 11 19C6.58172 19 3 15.4183 3 11C3 6.58172 6.58172 3 11 3C15.4183 3 19 6.58172 19 11Z" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                            </svg>
+                            Matching Entries
+                        </h2>
+                        <div class="filter-controls">
+                            <select id="sort-filter" class="filter-select">
+                                <option value="relevance">Most Relevant</option>
+                                <option value="popularity">Most Popular</option>
+                                <option value="alphabetical">A-Z</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="matches-grid" id="matches-grid">
+                        <!-- Match cards will be inserted here -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Life Path Number Tab -->
+            <div class="tab-content" id="life-path-tab">
+                <div class="hero-section">
+                    <h1 class="hero-title">Discover Your Life Path Number</h1>
+                    <p class="hero-subtitle">Unlock the mystical vibrations encoded in your birth date</p>
+                </div>
+
+                <div class="life-path-container">
+                    <div class="life-path-input-section">
+                        <h2>Enter Your Birth Date</h2>
+                        <div class="date-input-group">
+                            <div class="date-field">
+                                <label for="birth-month">Month</label>
+                                <input type="number" id="birth-month" min="1" max="12" placeholder="MM" max="12">
+                            </div>
+                            <div class="date-field">
+                                <label for="birth-day">Day</label>
+                                <input type="number" id="birth-day" min="1" max="31" placeholder="DD">
+                            </div>
+                            <div class="date-field">
+                                <label for="birth-year">Year</label>
+                                <input type="number" id="birth-year" min="1900" max="2024" placeholder="YYYY">
+                            </div>
+                        </div>
+                        <button class="btn-primary" id="calculate-life-path">Calculate Life Path</button>
+                    </div>
+
+                    <div class="life-path-result" id="life-path-result" style="display: none;">
+                        <div class="result-card">
+                            <div class="life-path-number" id="life-path-display">0</div>
+                            <div class="life-path-meaning" id="life-path-meaning"></div>
+                            <div class="life-path-description" id="life-path-description"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- What is Gematria Tab -->
+            <div class="tab-content" id="what-gematria-tab">
+                <div class="hero-section">
+                    <h1 class="hero-title">What is Gematria?</h1>
+                    <p class="hero-subtitle">Explore the ancient science of sacred numerology</p>
+                </div>
+
+                <div class="gematria-education-content">
+                    <section class="edu-section">
+                        <h2 class="section-title">Origins & History</h2>
+                        <div class="edu-text">
+                            <p>Gematria is an ancient system of assigning numerical values to letters and words. The term comes from the Greek word "geometria" (geometry), reflecting its mathematical nature. This mystical practice has roots in Hebrew, Greek, and Arabic traditions dating back thousands of years.</p>
+                            <p>In Jewish tradition, gematria has been used to interpret sacred texts like the Torah and Talmud. The belief is that numbers underlying words reveal hidden meanings and connections between concepts that share the same numerical value.</p>
+                        </div>
+                    </section>
+
+                    <section class="edu-section">
+                        <h2 class="section-title">How Gematria Works</h2>
+                        <div class="edu-text">
+                            <p>Each letter is assigned a numerical value. In English gematria, A=1, B=2, C=3, and so on up to Z=26. When you add up the values of all letters in a word or phrase, you get its gematria number.</p>
+                            <p>For example: "LOVE" = L(12) + O(15) + V(22) + E(5) = 54</p>
+                            <p>Different cipher systems exist, each revealing different layers of meaning:</p>
+                            <ul class="cipher-list">
+                                <li><strong>English Gematria:</strong> Direct A=1 to Z=26 mapping</li>
+                                <li><strong>Hebrew Gematria:</strong> Uses Hebrew letter values</li>
+                                <li><strong>Pythagorean:</strong> Based on ancient numerology principles</li>
+                                <li><strong>Chaldean:</strong> Ancient Chaldean numerology system</li>
+                                <li><strong>Sumerian:</strong> Based on Sumerian mathematics</li>
+                            </ul>
+                        </div>
+                    </section>
+
+                    <section class="edu-section">
+                        <h2 class="section-title">Global Connections & Synchronicities</h2>
+                        <div class="edu-text">
+                            <p>Gematria reveals fascinating numerical synchronicities across different cultures and events. When significant world events, dates, or names share the same gematria value, it suggests a deeper cosmic connection.</p>
+                            <p>Historical examples show patterns:</p>
+                            <ul class="examples-list">
+                                <li>Many important dates share numerical resonances</li>
+                                <li>Names of world leaders and significant figures often align with historical events</li>
+                                <li>Sacred texts contain layers of numerical patterns</li>
+                                <li>Astronomical events correlate with numerical meanings</li>
+                            </ul>
+                            <p>These connections are not coincidental but rather reflections of the underlying numerical order of reality itself.</p>
+                        </div>
+                    </section>
+
+                    <section class="edu-section">
+                        <h2 class="section-title">Modern Applications</h2>
+                        <div class="edu-text">
+                            <p>Today, gematria is used for:</p>
+                            <ul class="applications-list">
+                                <li><strong>Personal Growth:</strong> Understanding your life path and destiny</li>
+                                <li><strong>Spiritual Development:</strong> Connecting with higher consciousness through numbers</li>
+                                <li><strong>Predictive Analysis:</strong> Understanding patterns in current events</li>
+                                <li><strong>Problem Solving:</strong> Using numerical insights for decision-making</li>
+                                <li><strong>Historical Analysis:</strong> Decoding hidden patterns in historical records</li>
+                                <li><strong>Consciousness Studies:</strong> Exploring the relationship between language and reality</li>
+                            </ul>
+                        </div>
+                    </section>
+
+                    <section class="edu-section">
+                        <h2 class="section-title">Why Numbers Matter</h2>
+                        <div class="edu-text">
+                            <p>Numbers are the universal language. They transcend culture, religion, and geography. Gematria teaches us that reality operates on mathematical principles, and by understanding these principles, we can understand the deep structure of existence.</p>
+                            <p>Every word, name, and date carries numerical information. By decoding these values, we access layers of meaning hidden in plain sight—insights into the nature of events, people, and the universe itself.</p>
+                            <p class="highlight-text">Gematria is not prediction—it's revelation. It doesn't tell us what will happen; it reveals the numerical patterns that connect all things.</p>
+                        </div>
+                    </section>
+                </div>
+            </div>
+
+            <!-- Database Tab -->
+            <div class="tab-content" id="database-tab">
+                <div class="database-section">
+                    <h2 class="section-title">Popular Searches</h2>
+                    <div class="search-wrapper">
+                        <input type="text" id="database-search" class="search-input" placeholder="Search database...">
+                        <svg class="search-icon" width="20" height="20" viewBox="0 0 20 20" fill="none">
+                            <path d="M17.5 17.5L13.875 13.875M15.8333 9.16667C15.8333 12.8486 12.8486 15.8333 9.16667 15.8333C5.48477 15.8333 2.5 12.8486 2.5 9.16667C2.5 5.48477 5.48477 2.5 9.16667 2.5C12.8486 2.5 15.8333 5.48477 15.8333 9.16667Z" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                        </svg>
+                    </div>
+                    <div class="popular-grid" id="popular-grid">
+                        <!-- Popular entries will be inserted here -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- History Tab -->
+            <div class="tab-content" id="history-tab">
+                <div class="history-section">
+                    <div class="section-header">
+                        <h2 class="section-title">Search History</h2>
+                        <button class="btn-secondary" id="clear-history-btn">Clear History</button>
+                    </div>
+                    <div class="history-list" id="history-list">
+                        <!-- History items will be inserted here -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Saved Searches Tab -->
+            <div class="tab-content" id="saved-tab">
+                <div class="saved-section">
+                    <div class="section-header">
+                        <h2 class="section-title">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                                <path d="M19 21L12 16L5 21V5C5 3.89543 5.89543 3 7 3H17C18.1046 3 19 3.89543 19 5V21Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                            </svg>
+                            Saved Searches
+                        </h2>
+                        <button class="btn-secondary" id="save-current-btn">
+                            <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                                <path d="M8 2V14M2 8H14" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                            </svg>
+                            Save Current Search
+                        </button>
+                    </div>
+                    <div class="saved-list" id="saved-list">
+                        <!-- Saved items will be inserted here -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <p class="footer-text">© 2026 GematriaCalc - Explore the numerical mysteries of language</p>
+        </div>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+</html>
+
+    <!-- Auth Modal -->
+    <div class="modal" id="auth-modal" style="display: none;">
+        <div class="modal-overlay" id="modal-overlay"></div>
+        <div class="modal-content">
+            <button class="modal-close" id="modal-close">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                    <path d="M18 6L6 18M6 6L18 18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                </svg>
+            </button>
+            
+            <!-- Login Form -->
+            <div id="login-form" class="auth-form">
+                <h2 class="auth-title">Welcome Back</h2>
+                <p class="auth-subtitle">Login to save and compare your searches</p>
+                
+                <div class="form-group">
+                    <label for="login-email">Email</label>
+                    <input type="email" id="login-email" placeholder="your@email.com" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="login-password">Password</label>
+                    <input type="password" id="login-password" placeholder="••••••••" required>
+                </div>
+                
+                <button class="btn-primary" id="login-submit">Login</button>
+                
+                <p class="auth-switch">
+                    Don't have an account? 
+                    <a href="#" id="show-signup">Sign up</a>
+                </p>
+            </div>
+            
+            <!-- Signup Form -->
+            <div id="signup-form" class="auth-form" style="display: none;">
+                <h2 class="auth-title">Create Account</h2>
+                <p class="auth-subtitle">Save your searches and access them anywhere</p>
+                
+                <div class="form-group">
+                    <label for="signup-username">Username</label>
+                    <input type="text" id="signup-username" placeholder="Choose a username" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="signup-email">Email</label>
+                    <input type="email" id="signup-email" placeholder="your@email.com" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="signup-password">Password</label>
+                    <input type="password" id="signup-password" placeholder="••••••••" required>
+                </div>
+                
+                <button class="btn-primary" id="signup-submit">Create Account</button>
+                
+                <p class="auth-switch">
+                    Already have an account? 
+                    <a href="#" id="show-login">Login</a>
+                </p>
+            </div>
+        </div>
+    </div>
+
