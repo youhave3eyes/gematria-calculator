@@ -107,3 +107,4 @@ Contributions, issues, and feature requests are welcome!
 ---
 
 **Discover the hidden numbers in your words!** ✨
+
