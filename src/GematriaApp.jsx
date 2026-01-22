@@ -146,6 +146,12 @@ function GematriaApp() {
   // Life Path Calculator state
   const [birthDate, setBirthDate] = useState({ month: '', day: '', year: '' });
   const [lifePathResult, setLifePathResult] = useState(null);
+  
+  // Copy to clipboard state
+  const [copiedText, setCopiedText] = useState('');
+  
+  // Word suggestions state
+  const [suggestions, setSuggestions] = useState([]);
 
   // Load history from localStorage
   useEffect(() => {
@@ -249,12 +255,31 @@ function GematriaApp() {
           for (let [key, cipher] of Object.entries(ciphers)) {
             results[key] = cipher.calc(text);
           }
+          
+          // Generate suggestions
+          if (text.length >= 2) {
+            const upperText = text.toUpperCase();
+            const filteredSuggestions = gematriaDatabase
+              .filter(word => word.startsWith(upperText) && word !== upperText)
+              .slice(0, 5);
+            setSuggestions(filteredSuggestions);
+          } else {
+            setSuggestions([]);
+          }
+        } else {
+          setSuggestions([]);
         }
         return { ...s, text, results };
       }
       return s;
     });
     setSearches(newSearches);
+  };
+  
+  // Select suggestion
+  const selectSuggestion = (id, word) => {
+    handleInput(id, word);
+    setSuggestions([]);
   };
 
   // Commit to history
@@ -365,6 +390,50 @@ function GematriaApp() {
       newFilters.add(cipherKey);
     }
     setActiveCipherFilters(newFilters);
+  };
+
+  // Copy results to clipboard
+  const copyResultsToClipboard = (search) => {
+    let text = `"${search.text}"\n\n`;
+    Object.entries(ciphers).forEach(([key, cipher]) => {
+      text += `${cipher.name}: ${search.results[key]}\n`;
+    });
+    
+    navigator.clipboard.writeText(text).then(() => {
+      setCopiedText(search.text);
+      setTimeout(() => setCopiedText(''), 2000);
+    });
+  };
+
+  // Export all results as text
+  const exportAllResults = () => {
+    let text = '=== GEMATRIA CALCULATION RESULTS ===\n\n';
+    activeSearches.forEach((search, index) => {
+      text += `Search ${index + 1}: "${search.text}"\n`;
+      text += '─'.repeat(40) + '\n';
+      Object.entries(ciphers).forEach(([key, cipher]) => {
+        text += `${cipher.name}: ${search.results[key]}\n`;
+      });
+      text += '\n';
+    });
+    
+    if (matches.length > 0) {
+      text += '\n=== MATCHING VALUES ===\n\n';
+      matches.forEach((match, index) => {
+        const cipher = ciphers[match.cipher];
+        text += `Match ${index + 1}: ${cipher.name} = ${match.value}\n`;
+      });
+    }
+    
+    const blob = new Blob([text], { type: 'text/plain' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `gematria-results-${Date.now()}.txt`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
   };
 
   // Calculate Life Path Number
@@ -496,7 +565,7 @@ function GematriaApp() {
 
             <div className="search-boxes">
               {searches.map((search, index) => (
-                <div key={search.id} className="search-box-wrapper">
+                <div key={search.id} className="search-box-wrapper" style={{ position: 'relative' }}>
                   <div className="search-box-header">
                     <span className="search-label">Search {index + 1}</span>
                     {searches.length > 1 && (
@@ -514,19 +583,131 @@ function GematriaApp() {
                     value={search.text}
                     onChange={(e) => handleInput(search.id, e.target.value)}
                     onKeyDown={(e) => handleKeyDown(e, search.id)}
-                    onBlur={() => handleBlur(search.id)}
+                    onBlur={() => setTimeout(() => handleBlur(search.id), 200)}
                   />
+                  {suggestions.length > 0 && search.text.length >= 2 && (
+                    <div style={{
+                      position: 'absolute',
+                      top: '100%',
+                      left: 0,
+                      right: 0,
+                      background: 'rgba(17, 24, 39, 0.98)',
+                      border: '2px solid rgba(139, 92, 246, 0.5)',
+                      borderRadius: '8px',
+                      marginTop: '4px',
+                      zIndex: 1000,
+                      boxShadow: '0 8px 24px rgba(0, 0, 0, 0.5)',
+                      maxHeight: '200px',
+                      overflowY: 'auto'
+                    }}>
+                      {suggestions.map((word, idx) => (
+                        <div
+                          key={idx}
+                          onClick={() => selectSuggestion(search.id, word)}
+                          style={{
+                            padding: '12px 16px',
+                            cursor: 'pointer',
+                            color: 'var(--text-bright)',
+                            borderBottom: idx < suggestions.length - 1 ? '1px solid rgba(139, 92, 246, 0.2)' : 'none',
+                            transition: 'all 0.2s ease',
+                            fontSize: '14px',
+                            fontWeight: '500'
+                          }}
+                          onMouseEnter={(e) => {
+                            e.target.style.background = 'rgba(139, 92, 246, 0.2)';
+                            e.target.style.color = '#A78BFA';
+                          }}
+                          onMouseLeave={(e) => {
+                            e.target.style.background = 'transparent';
+                            e.target.style.color = 'var(--text-bright)';
+                          }}
+                        >
+                          {word}
+                        </div>
+                      ))}
+                    </div>
+                  )}
                 </div>
               ))}
             </div>
 
             {activeSearches.length > 0 && (
               <div className="results-section">
-                <h3 className="card-title" style={{ fontSize: '24px' }}>📊 Results</h3>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
+                  <h3 className="card-title" style={{ fontSize: '24px', margin: 0 }}>📊 Results</h3>
+                  <button
+                    onClick={exportAllResults}
+                    style={{
+                      padding: '10px 20px',
+                      fontSize: '14px',
+                      fontWeight: '600',
+                      borderRadius: '6px',
+                      border: '2px solid #8B5CF6',
+                      background: 'rgba(139, 92, 246, 0.1)',
+                      color: '#A78BFA',
+                      cursor: 'pointer',
+                      transition: 'all 0.3s ease',
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '8px'
+                    }}
+                    onMouseEnter={(e) => {
+                      e.target.style.background = 'rgba(139, 92, 246, 0.2)';
+                      e.target.style.transform = 'translateY(-2px)';
+                    }}
+                    onMouseLeave={(e) => {
+                      e.target.style.background = 'rgba(139, 92, 246, 0.1)';
+                      e.target.style.transform = 'translateY(0)';
+                    }}
+                  >
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                      <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                      <polyline points="7 10 12 15 17 10"/>
+                      <line x1="12" y1="15" x2="12" y2="3"/>
+                    </svg>
+                    Export All Results
+                  </button>
+                </div>
                 <div className="results-grid">
                   {activeSearches.map((search, index) => (
                     <div key={search.id} className="result-column">
-                      <div className="result-header">Search {searches.findIndex(s => s.id === search.id) + 1}</div>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
+                        <div className="result-header">Search {searches.findIndex(s => s.id === search.id) + 1}</div>
+                        <button
+                          onClick={() => copyResultsToClipboard(search)}
+                          style={{
+                            padding: '6px 12px',
+                            fontSize: '12px',
+                            fontWeight: '600',
+                            borderRadius: '4px',
+                            border: copiedText === search.text ? '1px solid #10B981' : '1px solid rgba(139, 92, 246, 0.5)',
+                            background: copiedText === search.text ? 'rgba(16, 185, 129, 0.2)' : 'rgba(139, 92, 246, 0.1)',
+                            color: copiedText === search.text ? '#10B981' : '#A78BFA',
+                            cursor: 'pointer',
+                            transition: 'all 0.2s ease',
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: '4px'
+                          }}
+                        >
+                          {copiedText === search.text ? (
+                            <>
+                              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3">
+                                <polyline points="20 6 9 17 4 12"/>
+                              </svg>
+                              Copied!
+                            </>
+                          ) : (
+                            <>
+                              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"/>
+                                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
+                              </svg>
+                              Copy
+                            </>
+                          )}
+                        </button>
+                      </div>
                       <div className="result-text">"{search.text}"</div>
                       <div className="cipher-results">
                         {Object.entries(ciphers).map(([key, cipher]) => {
