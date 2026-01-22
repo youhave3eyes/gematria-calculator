@@ -520,8 +520,22 @@ function GematriaApp() {
       
       const currentIndex = searches.findIndex(s => s.id === id);
       if (currentIndex === searches.length - 1) {
+        // Add new search and focus it after a brief delay
         addSearch();
+        setTimeout(() => {
+          const inputs = document.querySelectorAll('.search-input');
+          if (inputs[currentIndex + 1]) {
+            inputs[currentIndex + 1].focus();
+          }
+        }, 50);
+      } else {
+        // Focus next existing input
+        const inputs = document.querySelectorAll('.search-input');
+        if (inputs[currentIndex + 1]) {
+          inputs[currentIndex + 1].focus();
+        }
       }
+      playSound('add');
     }
   };
 
